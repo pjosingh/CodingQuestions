@@ -15,29 +15,38 @@ import java.util.function.Function;
 
 public class FilterExperiment2 {
 
-    public Set<EnhancedVehicleStopContext> split(EnhancedVehicleRunContext enhancedVehicleRunContext) {
+    public void split(EnhancedVehicleRunContext enhancedVehicleRunContext) {
         VehicleRun vehicleRun = enhancedVehicleRunContext.getEntity();
         Map<RunStructureIdentifier, RunStructure> runStructures = enhancedVehicleRunContext.getRunStructures();
 
         List<Signal> signals = findAllLatestSignalsByEntityId(vehicleRun.getVehicleRunIdentifier());
+
+        // we can have multiple signals at a particular stop
+        Map<String, Signal> signalMap = signals.stream()
+                                                .collect(Collectors.toMap(Signal::getSignalId, Function.identity()));
         
-        
-        Optional<Signal> maybeSignal = signalService.findByEntityId(vehicleRun.getVehicleRunIdentifier());
-        // Signal stop1 should match
-        // all signal types should be allowed
-        // need to add a for each on each signal returned from signal service
-        return vehicleRun.getVehicleStops().stream()
-            .map(s -> maybeSignal.map(Signal::getSignalContext)
-                .filter(signal -> signal instanceof VehicleStopSignalContext)
-                .map(signalContext -> (VehicleStopSignalContext) signalContext)
-                .filter(signalContext -> signalContext.getStopId().equals(s.getStopId()))
-                .map(signal -> new EnhancedVehicleStopContext(vehicleRun, runStructures, s.getStopId(),
-                    VersionedSignalIdentifier.builder()
-                        .id(maybeSignal.get().getSignalId())
-                        .version(maybeSignal.get().getSignalVersion())
-                        .build()))
-                .orElseGet(() -> new EnhancedVehicleStopContext(vehicleRun, runStructures, s.getStopId())))
-            .collect(Collectors.toSet());
+        vehicleRun
+            .getVehicleStops()
+            .stream()
+            .map(stop -> signals.stream().filter(signal -> signal.get)
+
+
+        // Optional<Signal> maybeSignal = signalService.findByEntityId(vehicleRun.getVehicleRunIdentifier());
+        // // Signal stop1 should match
+        // // all signal types should be allowed
+        // // need to add a for each on each signal returned from signal service
+        // return vehicleRun.getVehicleStops().stream()
+        //     .map(s -> maybeSignal.map(Signal::getSignalContext)
+        //         .filter(signal -> signal instanceof VehicleStopSignalContext)
+        //         .map(signalContext -> (VehicleStopSignalContext) signalContext)
+        //         .filter(signalContext -> signalContext.getStopId().equals(s.getStopId()))
+        //         .map(signal -> new EnhancedVehicleStopContext(vehicleRun, runStructures, s.getStopId(),
+        //             VersionedSignalIdentifier.builder()
+        //                 .id(maybeSignal.get().getSignalId())
+        //                 .version(maybeSignal.get().getSignalVersion())
+        //                 .build()))
+        //         .orElseGet(() -> new EnhancedVehicleStopContext(vehicleRun, runStructures, s.getStopId())))
+        //     .collect(Collectors.toSet());
     }
     
 
@@ -119,6 +128,12 @@ class Signal {
     String signalStatus;
     String type;
     Instant lastModifiedDate;
+    VehicleStop stopId;
+
+    // where is stop id stored in signals ?
+    public VehicleStop getStopId() {
+        return stopId;
+    }
 
     public String getSignalId() {
         return signalId;
