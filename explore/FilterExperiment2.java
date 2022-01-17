@@ -28,7 +28,8 @@ public class FilterExperiment2 {
         vehicleRun
             .getVehicleStops()
             .stream()
-            .map(stop -> signals.stream().filter(signal -> signal.get)
+            .map(stop -> signals.stream().filter(signal -> signal.getStopId().equals(stop)))
+            .
 
 
         // Optional<Signal> maybeSignal = signalService.findByEntityId(vehicleRun.getVehicleRunIdentifier());
