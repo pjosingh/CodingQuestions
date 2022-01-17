@@ -1,7 +1,5 @@
 package CrackingTheCodingInterviews.Arrays;
 
-import java.util.zip.Checksum;
-
 class OnePointOne {
 
 
