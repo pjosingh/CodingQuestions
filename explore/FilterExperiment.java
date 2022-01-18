@@ -17,11 +17,11 @@ class FilterExperiment {
 
     private final static int ACTIONABLE_SIGNALS_TIME_THRESHOLD = 900;
 
-    public static List<Signal> findAllLatestSignalsByEntityId(String entityId) {
-        List<Signal> latestSignals = findAllSignalsByEntityId(entityId);
+    public static List<Signal1> findAllLatestSignalsByEntityId(String entityId) {
+        List<Signal1> latestSignals = findAllSignalsByEntityId(entityId);
         print(latestSignals);
         System.out.println("Size: "+latestSignals.size());
-        List<Signal> temp = latestSignals
+        List<Signal1> temp = latestSignals
         .stream()
         .filter(signal -> isTerminalSignalStatus(signal.getStatus()))
         .collect(Collectors.toList());
@@ -37,10 +37,10 @@ class FilterExperiment {
                 .stream()
                 .filter(signal -> isTerminalSignalStatus(signal.getStatus()))
                 .filter(signal -> signal.getLastModifiedDate().isAfter(Instant.now().minusSeconds(ACTIONABLE_SIGNALS_TIME_THRESHOLD)))
-                .collect(Collectors.toMap(Signal::getSignalId, Function.identity(), BinaryOperator.maxBy(Comparator.comparing(Signal::getSignalVersion)))).values());
-        Collection<Signal> latestVersion = latestSignals
+                .collect(Collectors.toMap(Signal1::getSignalId, Function.identity(), BinaryOperator.maxBy(Comparator.comparing(Signal1::getSignalVersion)))).values());
+        Collection<Signal1> latestVersion = latestSignals
         .stream()
-        .collect(Collectors.groupingBy(Signal::getSignalId, Collectors.collectingAndThen(Collectors.maxBy(Comparator.comparing(Signal::getSignalVersion)), Optional::get))).values();
+        .collect(Collectors.groupingBy(Signal1::getSignalId, Collectors.collectingAndThen(Collectors.maxBy(Comparator.comparing(Signal1::getSignalVersion)), Optional::get))).values();
         
         print(new LinkedList<>(latestVersion));
         System.out.println("====");
@@ -52,21 +52,21 @@ class FilterExperiment {
         return target.equals("INACTIVE") ? false: true;
     }
 
-    private static List<Signal> findAllSignalsByEntityId(String target) {
-        List<Signal> response = new ArrayList<>();
+    private static List<Signal1> findAllSignalsByEntityId(String target) {
+        List<Signal1> response = new ArrayList<>();
         response.add(getSignal("ACTIVE", "NO_EMPTIES_SIGNAL", Instant.now(), 1));
         response.add(getSignal("INACTIVE","NO_EMPTIES_SIGNAL", Instant.now(), 2));
         response.add(getSignal("ACTIVE", "NO_EMPTIES_SIGNAL", Instant.now().minusSeconds(1000), 1));
         response.add(getSignal("ACTIVE", "CARGO_NOT_DELIVERED", Instant.now(), 1));
-        Signal signal = response.get(0).copy();
+        Signal1 signal = response.get(0).copy();
         signal.version = 2;
         signal.lastModifiedDate = Instant.now();
         response.add(signal);
         return response;
     }
 
-    private static Signal getSignal(String status, String type, Instant modifiedDate, int version) {
-        Signal signal = new Signal();
+    private static Signal1 getSignal(String status, String type, Instant modifiedDate, int version) {
+        Signal1 signal = new Signal1();
         signal.signalId = UUID.randomUUID().toString();
         signal.signalStatus = status;
         signal.lastModifiedDate = modifiedDate;
@@ -74,9 +74,9 @@ class FilterExperiment {
         return signal;
     }
 
-    private static void print(List<Signal> result) {
+    private static void print(List<Signal1> result) {
         System.out.println("Printing list");
-        for (Signal signal: result) {
+        for (Signal1 signal: result) {
             System.out.println(signal.signalId+" "+signal.version+" "+signal.getStatus()+" "+signal.getLastModifiedDate());
         }
     }
@@ -84,12 +84,12 @@ class FilterExperiment {
 
     public static void main(String ar[]) {
         System.out.println("Hello world ");
-        List<Signal> result = findAllLatestSignalsByEntityId(new String("VR1"));
+        List<Signal1> result = findAllLatestSignalsByEntityId(new String("VR1"));
         print(result);
     }
 }
 
-class Signal {
+class Signal1 {
     String signalId;
     int version;
     String signalStatus;
@@ -112,9 +112,9 @@ class Signal {
         return lastModifiedDate;
     }
 
-    public Signal copy() {
-        Signal signal = this;
-        Signal response = new Signal();
+    public Signal1 copy() {
+        Signal1 signal = this;
+        Signal1 response = new Signal1();
         response.lastModifiedDate = signal.lastModifiedDate;
         response.signalId = signal.signalId;
         response.signalStatus = signal.signalStatus;

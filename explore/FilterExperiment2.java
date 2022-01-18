@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import java.util.Optional;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -17,7 +18,7 @@ public class FilterExperiment2 {
 
     private final static int ACTIONABLE_SIGNALS_TIME_THRESHOLD = 900;
 
-    public void split(EnhancedVehicleRunContext enhancedVehicleRunContext) {
+    public static void split(EnhancedVehicleRunContext enhancedVehicleRunContext) {
         VehicleRun vehicleRun = enhancedVehicleRunContext.getEntity();
         Map<RunStructureIdentifier, RunStructure> runStructures = enhancedVehicleRunContext.getRunStructures();
 
@@ -26,18 +27,17 @@ public class FilterExperiment2 {
         // we can have multiple signals at a particular stop
         Map<String, Signal> signalMap = signals.stream()
                                                 .collect(Collectors.toMap(Signal::getSignalId, Function.identity()));
-        
-        List<Boolean> response = vehicleRun
-            .getVehicleStops()
-            .stream()
-            .map(s-> signals.stream().allMatch(signal -> signal.getStopId().getId().equals(s.getId())))
-            .collect(Collectors.toList());
-            
+        Collection<List<Signal>> signalList = signals.stream().collect(Collectors.groupingBy(signal -> new VehicleStop(signal.stopId.id))).values();
 
-        for (Boolean el: response) {
-            System.out.println(el);
-        }
+        System.out.println(signalList.size());
         
+        for (List<Signal> sList: signalList) {
+            System.out.println(sList.size());
+            for (Signal el: sList) {
+                System.out.println(el);
+            }
+        }
+                    
         // Optional<Signal> maybeSignal = signalService.findByEntityId(vehicleRun.getVehicleRunIdentifier());
         // // Signal stop1 should match
         // // all signal types should be allowed
@@ -67,6 +67,7 @@ public class FilterExperiment2 {
         .collect(Collectors.toList());
 
         System.out.println("Size: "+temp.size());
+        
         // Collection<User> latestVersions = users.stream()
         //     .collect(Collectors.groupingBy(User::getUserId,
         //             Collectors.collectingAndThen(Collectors.maxBy(Comparator.comparing(User::getVersionNumber)), Optional::get)))
@@ -101,29 +102,35 @@ public class FilterExperiment2 {
 
     private static List<Signal> findAllSignalsByEntityId(String target) {
         List<Signal> response = new ArrayList<>();
-        response.add(getSignal("ACTIVE", "NO_EMPTIES_SIGNAL", Instant.now(), 1));
-        response.add(getSignal("INACTIVE","NO_EMPTIES_SIGNAL", Instant.now(), 2));
-        response.add(getSignal("ACTIVE", "NO_EMPTIES_SIGNAL", Instant.now().minusSeconds(1000), 1));
-        response.add(getSignal("ACTIVE", "CARGO_NOT_DELIVERED", Instant.now(), 1));
+        response.add(getSignal("ACTIVE", "NO_EMPTIES_SIGNAL", Instant.now(), 1,"stop1"));
+        response.add(getSignal("INACTIVE","NO_EMPTIES_SIGNAL", Instant.now(), 2,"stop1"));
+        response.add(getSignal("ACTIVE", "NO_EMPTIES_SIGNAL", Instant.now().minusSeconds(1000), 1,"stop1"));
+        response.add(getSignal("ACTIVE", "CARGO_NOT_DELIVERED", Instant.now(), 1,"stop1"));
         Signal signal = response.get(0).copy();
         signal.version = 2;
         signal.lastModifiedDate = Instant.now();
+        signal.stopId= new VehicleStop("stop1");
         response.add(signal);
         return response;
     }
 
-    private static Signal getSignal(String status, String type, Instant modifiedDate, int version) {
+    private static Signal getSignal(String status, String type, Instant modifiedDate, int version, String stopid) {
         Signal signal = new Signal();
         signal.signalId = UUID.randomUUID().toString();
         signal.signalStatus = status;
         signal.lastModifiedDate = modifiedDate;
         signal.version = version;
+        signal.stopId = new VehicleStop(stopid);
         return signal;
     }
     
 
     public static void main(String ar[]) {
-
+        EnhancedVehicleRunContext enhancedVehicleRunContext = new EnhancedVehicleRunContext();
+        enhancedVehicleRunContext.vehicleRun = new VehicleRun("VR-1");
+        List<VehicleStop> stops = new ArrayList<>();
+        stops.add(new VehicleStop("stop1"));
+        split(enhancedVehicleRunContext);
     }
     
 }
@@ -158,6 +165,11 @@ class Signal {
         return lastModifiedDate;
     }
 
+    public String toString() {
+        
+        return signalId+","+version+","+stopId+","+signalStatus+","+lastModifiedDate;
+    }
+
     public Signal copy() {
         Signal signal = this;
         Signal response = new Signal();
@@ -182,10 +194,22 @@ class VehicleStop {
         return id;
     }
 
+    public VehicleStop(String id) {
+        this.id = id;
+    }
+
+    public String toString() {
+        return id;
+    }
+
 }
 class VehicleRun {
     List<VehicleStop> vehicleStops;
     String id;
+
+    public VehicleRun(String id) {
+        this.id = id;
+    }
 
     public List<VehicleStop> getVehicleStops() {
         return vehicleStops;
