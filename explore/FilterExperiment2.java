@@ -15,6 +15,8 @@ import java.util.function.Function;
 
 public class FilterExperiment2 {
 
+    private final static int ACTIONABLE_SIGNALS_TIME_THRESHOLD = 900;
+
     public void split(EnhancedVehicleRunContext enhancedVehicleRunContext) {
         VehicleRun vehicleRun = enhancedVehicleRunContext.getEntity();
         Map<RunStructureIdentifier, RunStructure> runStructures = enhancedVehicleRunContext.getRunStructures();
@@ -25,13 +27,17 @@ public class FilterExperiment2 {
         Map<String, Signal> signalMap = signals.stream()
                                                 .collect(Collectors.toMap(Signal::getSignalId, Function.identity()));
         
-        vehicleRun
+        List<Boolean> response = vehicleRun
             .getVehicleStops()
             .stream()
-            .map(stop -> signals.stream().filter(signal -> signal.getStopId().equals(stop)))
-            .
+            .map(s-> signals.stream().allMatch(signal -> signal.getStopId().getId().equals(s.getId())))
+            .collect(Collectors.toList());
+            
 
-
+        for (Boolean el: response) {
+            System.out.println(el);
+        }
+        
         // Optional<Signal> maybeSignal = signalService.findByEntityId(vehicleRun.getVehicleRunIdentifier());
         // // Signal stop1 should match
         // // all signal types should be allowed
@@ -171,7 +177,10 @@ class EnhancedVehicleStopContext {
 }
 
 class VehicleStop {
-
+    String id;
+    public String getId() {
+        return id;
+    }
 
 }
 class VehicleRun {
