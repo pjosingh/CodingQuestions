@@ -1,3 +1,5 @@
+import sys
+
 class Solution(object):
     def minDistance(self, word1, word2):
         """
@@ -26,10 +28,10 @@ class Solution(object):
             return count
         
         if index1 >= len(word1):
-            return sys.maxint
+            return sys.maxsize
         
         if index2 >= len(word2):
-            return sys.maxint
+            return sys.maxsize
         
         # insert 
         temp_insert_word1 = word1[:index1] + word2[index2] + word1[index1:]
@@ -50,4 +52,5 @@ class Solution(object):
         return min(insert, delete, replace)
     
 
-        
+sol = Solution()
+print(sol.minDistance("horse", "ros"))
