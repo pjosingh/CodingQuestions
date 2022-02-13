@@ -26,3 +26,6 @@ assert sol.wordBreak(s = "leetcode", wordDict = ["leet","code"]) == True
 assert sol.wordBreak(s = "amazonkindle", wordDict = ["ama","zon", "amazon", "kindle", "kind"]) == True
 assert sol.wordBreak("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab", ["a","aa","aaa","aaaa","aaaaa","aaaaaa","aaaaaaa","aaaaaaaa","aaaaaaaaa","aaaaaaaaaa"]) == True
 
+
+
+
