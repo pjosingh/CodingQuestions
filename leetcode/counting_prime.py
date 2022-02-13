@@ -1,33 +1,18 @@
-from math import sqrt
- 
-
-class Solution(object):
+class Solution:
+    # @param {integer} n
+    # @return {integer}
     def countPrimes(self, n):
-        """
-        :type n: int
-        :rtype: int
-        """
-
-        count = 0
-        for i in range (n):
-            if self.isPrime(i):
-                count += 1        
-
-        return count
-
-    
-    def isPrime(self, n):
-    
-        # Corner case
-        if (n <= 1):
-            return False
-    
-        # Check from 2 to sqrt(n)
-        for i in range(2, int(sqrt(n))+1):
-            if (n % i == 0):
-                return False
-    
-        return True
-sol = Solution()
-print(sol.countPrimes(10))
+        if n < 3:
+            return 0
+        primes = [True] * n
         
+        primes[0] = primes[1] = False
+        for i in range(2, int(n ** 0.5) + 1):
+            print(i, primes, sum(primes))
+            if primes[i]:
+                primes[i * i: n: i] = [False] * len(primes[i * i: n: i])
+                print("post: \t", i, primes, sum(primes))
+        return sum(primes)
+
+sol = Solution()
+assert sol.countPrimes(10) == 4
