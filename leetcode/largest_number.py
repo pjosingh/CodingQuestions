@@ -26,8 +26,12 @@ class Solution(object):
                 if len(mapping[i]) == 1:
                     response += str(mapping[i][0])
                 else:
-                    number = self.largestNumber(mapping[i])
-                    response += number
+                    mapping[i].sort(reverse = True)
+                    print("\t", mapping[i])
+                    for el in mapping[i]:
+                        response += str(el)
+
+                    #response += number
 
         print(response)
         return response
