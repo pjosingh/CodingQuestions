@@ -58,6 +58,10 @@ class Solution(object):
             temp.next = prev
             prev = temp
             count +=1 
+        if next:
+            temp = next.next
+            
+
         
         print(f' temp {temp.val} prev: {prev.val}')
 
