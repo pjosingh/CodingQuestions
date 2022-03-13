@@ -30,6 +30,7 @@ class RandomizedSet:
             
         self.mapping[self.stack[index]] = index
         self.stack.pop()
+        return True
     
     def getRandom(self) -> int: 
         if len(self.stack) == 1:
