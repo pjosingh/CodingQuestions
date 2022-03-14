@@ -46,6 +46,7 @@ class BloomFilter(object):
  
             # set the bit True in bit_array
             self.bit_array[digest] = True
+        print(f'\t\tsize: {self.size} hashcount {self.hash_count} item: {item} digests {digests}  bitarray: {self.bit_array}')
  
     def check(self, item):
         '''
